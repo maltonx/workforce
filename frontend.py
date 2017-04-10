@@ -19,13 +19,6 @@ from flask import render_template
 
 app = Flask(__name__)
 
-app.config.update(dict(
-    DEBUG = True,
-    SECRET_KEY='98huu4w9r8wo4r',
-    USERNAME='admin',
-    PASSWORD='default'
-))
-
 from wf_views import *
 
 
