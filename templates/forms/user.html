@@ -1,0 +1,12 @@
+<h4>Users</h4>
+{% from "forms/_formhelpers.html" import render_field %}
+<form method=post action="{{ url_for('user') }}">
+  <dl>
+    {% for field in form %}
+        {% if not field.name in ['submit', 'csrf_token'] %}
+            {{ render_field(field) }}
+        {% endif %}
+    {% endfor %}
+  </dl>
+  <p><input type=submit value=Save>
+</form>

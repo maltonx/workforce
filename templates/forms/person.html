@@ -1,0 +1,17 @@
+<h4>Person</h4>
+{% from "forms/_formhelpers.html" import render_field %}
+<form method=post action="{{ url_for('user') }}">
+  <dl>
+        {{ render_field(firstname = TextField()
+        {{ render_field(form.lastname) }}
+        {{ render_field(form.title) }}
+        {{ render_field(form.telephone) }}
+        {{ render_field(form.email) }}
+        {{ render_field(form.position) }}
+        {{ render_field(form.category) }}
+        {{ render_field(form.company_id) }}
+        {{ render_field(form.instance_id) }}
+        {{ render_field(form.submit) }}
+  </dl>
+  <p><input type=submit value=Save>
+</form>
