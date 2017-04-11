@@ -2,6 +2,15 @@
 <html lang="en">
 <head>
 <body>
-<h4>{{ username }}</h4>
+<h2>Users</h2>
+{% include "forms/user.html" %}
+<ul>
+<form method=post >
+{% for user in users %}
+    <li>{{ user.username }}
+        <button name="Delete" value="{{user.id}}">Delete</button>
+    </li>
+{% endfor %}
+</ul>
 </body>
 </head>
