@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<body>
+<h2>Frontpage</h2>
+
+{% from "_formhelpers.html" import build_formlist %}
+{% from "_listhelpers.html" import list_entries %}
+
+{{ build_formlist(userform) }}
+{{ build_formlist(personform) }}
+
+{{ list_entries(
+    entries = users,
+    header = 'username',
+    fields = [['username', ], ['person', 'firstname']]
+    ) }}
+
+
+
+</body>
+</head>

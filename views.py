@@ -9,38 +9,43 @@ import models
 import forms
 
 
-
-
 @app.route('/', methods=['GET', 'POST'])
-def user():
-    users = models.User.select()
-    form = forms.UserForm()
-    try:
-        if request.form['Delete']:
-            models.User.get(models.User.id == request.form['Delete']).delete_instance()
-            return redirect(url_for('user'))
-    except:
-        pass
+def frontpage():
+    Form = forms.UserPersonForm(request.values)
     if request.method == 'POST':
-        u = models.User()
-        u.username = request.form['username']
-        u.password = request.form['username']
-        u.email = request.form['username']
-        u.save()
-        return redirect(url_for('user'))
-
-    return render_template('frontpage.html', form = form, users = users)
-
-
-@app.route('/delete/<userid>')
-def delete(userid):
-    models.User.get(id = userid).delete_instance()
+        if Form.submit.data:
+            saveFormsToModels(Form)
+        return redirect(url_for('frontpage'))
+    return render_template('frontpage.html', 
+        users = models.User.select(),
+        persons = models.Person.select(),
+        userform = Form, 
+        )
 
 
-
-
-
-
+def saveFormsToModels(form):
+    editedModels = {}
+    for formfield in form.data:
+        if formfield in ['csrf_token']:
+            continue
+        try:
+            modelname, field = formfield.split('_')
+        except:
+            continue
+        value = form[formfield].data
+        try:
+            setattr(editedModels[modelname], field, value)
+        except:
+            editedModels[modelname] = models.ALL_MODELS_DICT[modelname]()
+            setattr(editedModels[modelname], field, value)
+    for model in editedModels:
+        for m in editedModels:
+            try:
+                setattr(editedModels[m], model.lower(), editedModels[model])
+                print 'setted %s' % model.lower()
+            except:
+                pass
+        editedModels[model].save()
 
 
 @app.route('/favicon.ico')

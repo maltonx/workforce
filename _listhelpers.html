@@ -1,0 +1,17 @@
+{% macro list_entries(entries, header, fields) %}
+<ul>
+{% for entry in entries %}
+    <li>{{ entry[header] }}
+        <ul>
+        {% for field in fields %}
+            <li>{{ field[0] }}: {{ entry[field[0]] }}</li>
+        {% endfor %}
+        </ul>
+    </li>
+{% endfor %}
+</ul>
+{% endmacro %}
+
+
+
+

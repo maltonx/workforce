@@ -1,32 +1,36 @@
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import TextField
 from wtforms import PasswordField
 from wtforms import SubmitField
+from wtforms import HiddenField
 from wtforms import validators
-
 import models
 
-class UserForm(Form):
-    username = TextField()
-    password = PasswordField('New Password', [
+class PersonForm(FlaskForm): 
+    Person_firstname = TextField()
+    Person_lastname = TextField()
+    Person_title = TextField()
+    Person_telephone = TextField()
+    Person_email = TextField()
+    Person_position = TextField()
+    Person_category = TextField()
+
+
+
+class UserForm(FlaskForm):
+    User_username = TextField()
+    User_password = PasswordField('New Password', [
         validators.DataRequired(),
         validators.EqualTo('confirm', message='Passwords must match')
     ])
     confirm = PasswordField('Repeat Password')
-    email = TextField()
-    submit = SubmitField()
 
 
 
 
-class PersonForm(Form): 
-    firstname = TextField()
-    lastname = TextField()
-    title = TextField()
-    telephone = TextField()
-    email = TextField()
-    position = TextField()
-    category = TextField()
-    company_id = TextField()
-    instance_id = TextField()
-    submit = SubmitField()
+class UserPersonForm(UserForm, PersonForm):
+    submit = SubmitField('Save')
+
+
+
+
