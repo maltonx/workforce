@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<body>
+{% include 'header.html' %}
+<h2>{{ header }}</h2>
+
+<form method="post" action="">
+{% for field in form %}
+  <p>{{ field.label }} {{ field }}</p>
+{% endfor %}
+<p>
+    <button type="submit", name="submit", value="Save">Add</button>
+    <button type="submit", name="submit", value="Delete">Clear</button>
+</p>
+</form>
+
+
+{% from "_listhelpers.html" import list_entries %}
+{{ list_entries(
+    entries = entries,
+    fields = fields,
+    ) }}
+
+
+</body>
+</head>

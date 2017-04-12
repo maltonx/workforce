@@ -12,7 +12,7 @@
 {% endmacro %}
 
 {% macro build_formlist(form) %}
-<form method=post action="{{ url_for('frontpage') }}">
+<form method=post action="{{ url_for('register') }}">
 <dl>
 {% for field in form %}
   {% if not field.name in ['csrf_token'] %}
