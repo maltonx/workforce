@@ -23,14 +23,23 @@ def register():
         form = Form, 
         )
 
-@app.route('/edit/<modelname>/', methods=['GET', 'POST'])
+@app.route('/add/<modelname>/', methods=['GET', 'POST'])
 def add(modelname):
     kwargs = listAndEdit(modelname)
+    return render_template('addpage.html', **kwargs)
+
+@app.route('/add/<modelname>/to/<foreign_table>/<foreign_key>', methods=['GET', 'POST'])
+def addto(modelname, foreign_table, foreign_key):
+    kwargs = listAndEdit(modelname, 
+        action = 'AddTo', 
+        foreign_table = foreign_table, 
+        foreign_key = foreign_key)
     return render_template('addpage.html', **kwargs)
 
 @app.route('/edit/<modelname>/<entryid>', methods=['GET', 'POST'])
 def edit(modelname, entryid):
     kwargs = listAndEdit(modelname, entryid)
+    print kwargs
     return render_template('editpage.html', **kwargs)
 
 def saveFormsToModels(form):
@@ -79,10 +88,24 @@ def saveFormsToModels(form):
         editedModels[model].save()
 
 def getFields(model, exclude=['id']):
-    fields = [(x, type(model._meta.fields[x]).__name__) for x in model._meta.sorted_field_names if not x in exclude]
+    foreignKeys = {x.column : x.dest_table for x in models.db.get_foreign_keys(model.__name__)}
+    #fields = [(x, type(model._meta.fields[x]).__name__, foreignKeys) for x in model._meta.sorted_field_names if not x in exclude]
+    print foreignKeys
+    fields = []
+    for field in model._meta.sorted_field_names:
+        if not field in exclude:
+            fieldtype = type(model._meta.fields[field]).__name__
+            foreignFieldName = '{}_id'.format(field)
+            if foreignFieldName in foreignKeys:
+                foreignKeyModelName = foreignKeys[foreignFieldName].title()
+            else:
+                foreignKeyModelName = False
+            fields.append(
+                (field, fieldtype, foreignKeyModelName))
+            print "Field: {}\nType: {}\nModelname: {}\n".format(field, fieldtype, foreignKeyModelName)
     return fields
   
-def listAndEdit(modelname,entryid = 0, entries = False):
+def listAndEdit(modelname, entryid = 0, entries = False, action = False, **kwargs):
     try:
         model = models.ALL_MODELS_DICT[modelname]
     except KeyError:
@@ -95,24 +118,29 @@ def listAndEdit(modelname,entryid = 0, entries = False):
         entry = model.get(id=int(entryid))
     except:
         entry = model()
+
+    form = modelForm(obj = entry)
+
     if request.method == 'POST':
         if request.form['submit'] == 'Save':
             form = modelForm(request.values, obj = entry)
             if form.validate():
                 form.populate_obj(entry)
                 entry.save()
+                if action == 'AddTo':
+                    addForeignKey(model, entry, kwargs['foreign_table'], kwargs['foreign_key'])
+                    redirect(url_for('edit', modelname = model, entryid = kwargs['foreign_key']))
                 flash('Your entry has been saved')
                 print 'saved'
         elif request.form['submit'] == 'Delete':
             try:
-                model.get(id=int(entryid)).delete_instance(recursive = True)
-                return redirect(url_for('add', modelname = modelname))
+                model.get(model.id == int(entryid)).delete_instance(recursive = True)
+                #redirect(url_for('add', modelname = modelname))
             except:
+                pass
+            finally:
                 entry = model()
                 form = modelForm(obj = entry)
-    else:
-        form = modelForm(obj = entry)
-
 
 
 
@@ -124,8 +152,22 @@ def listAndEdit(modelname,entryid = 0, entries = False):
         entries=entries, 
         fields = fields,
         )
-
     return kwargs
+
+
+def addForeignKey(model, entry, foreign_table, foreign_key):
+    foreignModel = models.ALL_MODELS_DICT[foreign_table]
+    foreignItem = foreignModel.get(foreignModel.id == int(foreign_key))
+    foreignFieldName = model.__name__.lower()
+    print "entry = {}".format(foreignModel)
+    print "item = {}".format(foreignItem)
+    print "fieldName = {}".format(foreignFieldName)
+    print "id = {}".format(entry.id)
+
+    setattr(foreignItem, foreignFieldName, entry.id)
+    foreignItem.save()
+
+
 
 
 @app.route('/favicon.ico')

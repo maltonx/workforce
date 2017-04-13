@@ -1,14 +1,19 @@
-{% macro list_entries(entries, fields) %}
+{% macro list_entries(entries, fields, header) %}
 <ul>
 {% for entry in entries %}
-    <li><a href="{{ entry.id }}">{{ entry }}</a>
+    <li><a href="/edit/{{ header }}/{{ entry.id }}">{{ entry }}</a>
         <ul>
         {% for field in fields %}
             <li>
 			{% if field[1] == 'ForeignKeyField' %}
-            	<a href="#pathToTable">	{{ field[0] }}: {{ entry[field[0]] }} </a>
+                {% if entry[field[0]] %}
+                <a href="/edit/{{ field[2] }}/{{ entry[field[0]].id }}">
+                {% else %}
+            	<a href="/add/{{ field[2] }}/to/{{ header }}/{{ entry.id }}">
+                {% endif %}
+                {{ field[0].title() }}: {{ entry[field[0]] }}</a>
             {% else %}
-            	{{ field[0] }}: {{ entry[field[0]] }}
+            	{{ field[0].title() }}: {{ entry[field[0]] }}
             {% endif %}
             </li>
         {% endfor %}
