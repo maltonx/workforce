@@ -39,7 +39,7 @@ def addto(modelname, foreign_table, foreign_key):
 @app.route('/edit/<modelname>/<entryid>', methods=['GET', 'POST'])
 def edit(modelname, entryid):
     kwargs = listAndEdit(modelname, entryid)
-    print kwargs
+    #print kwargs
     return render_template('editpage.html', **kwargs)
 
 def saveFormsToModels(form):
@@ -90,7 +90,7 @@ def saveFormsToModels(form):
 def getFields(model, exclude=['id']):
     foreignKeys = {x.column : x.dest_table for x in models.db.get_foreign_keys(model.__name__)}
     #fields = [(x, type(model._meta.fields[x]).__name__, foreignKeys) for x in model._meta.sorted_field_names if not x in exclude]
-    print foreignKeys
+    #print foreignKeys
     fields = []
     for field in model._meta.sorted_field_names:
         if not field in exclude:
@@ -102,9 +102,25 @@ def getFields(model, exclude=['id']):
                 foreignKeyModelName = False
             fields.append(
                 (field, fieldtype, foreignKeyModelName))
-            print "Field: {}\nType: {}\nModelname: {}\n".format(field, fieldtype, foreignKeyModelName)
+            #print "Field: {}\nType: {}\nModelname: {}\n".format(field, fieldtype, foreignKeyModelName)
     return fields
   
+def getRelatedModels(entry):
+    entries = []
+    try:
+        for query, fk in reversed(list(entry.dependencies())):
+            #for x in dir(fk):
+                #print x
+            for x in fk.model_class.select().where(query):
+                #print 'here:'
+                #print x
+                entries.append(x)
+    except:
+        pass
+    return entries
+
+
+
 def listAndEdit(modelname, entryid = 0, entries = False, action = False, **kwargs):
     try:
         model = models.ALL_MODELS_DICT[modelname]
@@ -114,10 +130,18 @@ def listAndEdit(modelname, entryid = 0, entries = False, action = False, **kwarg
         entries = model.select()
     modelForm = model_form(model)
     fields = getFields(model)
+
+
+
+
     try:
         entry = model.get(id=int(entryid))
+        dependencies = getRelatedModels(entry)
     except:
         entry = model()
+        dependencies = False
+
+
 
     form = modelForm(obj = entry)
 
@@ -151,7 +175,12 @@ def listAndEdit(modelname, entryid = 0, entries = False, action = False, **kwarg
         entry=entry, 
         entries=entries, 
         fields = fields,
+        dependencies = dependencies,
         )
+
+
+
+
     return kwargs
 
 

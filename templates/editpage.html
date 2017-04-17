@@ -15,13 +15,26 @@
 </p>
 </form>
 
-
+<table>
+<tr>
+<td valign="top">
 {% from "_listhelpers.html" import list_entries %}
+{% from "_listhelpers.html" import list_dependencies %}
 {{ list_entries(
     entries = entries,
     fields = fields,
     header = header,
     ) }}
+</td>
+<td valign="top">
+
+{{ list_dependencies(
+    entries = dependencies,
+    ) }}
+</td>
+</tr>
+</table>
+
 
 
 </body>

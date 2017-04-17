@@ -25,4 +25,12 @@
 
 
 
+{% macro list_dependencies(entries) %}
+<ul>
+{% for entry in entries %}
+    <li>{{ entry._meta.db_table }}<a href="/edit/{{ header }}/{{ entry.id }}">{{ entry }}</a> </li>
+{% endfor %}
+</ul>
+{% endmacro %}
+
 
