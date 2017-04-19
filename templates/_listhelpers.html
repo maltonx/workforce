@@ -1,17 +1,16 @@
 {% macro list_entries(entries, fields, header) %}
-<ul>
+<ul class="list-group">
 {% for entry in entries %}
-    <li><a href="/edit/{{ header }}/{{ entry.id }}">{{ entry }}</a>
-        <ul>
+    <li class="list-group-item"><a href="/edit/{{ header }}/{{ entry.id }}">{{ entry }}</a>
+        <ul class="list-group">
         {% for field in fields %}
-            <li>
+            <li class="list-group-item">
 			{% if field[1] == 'ForeignKeyField' %}
                 {% if entry[field[0]] %}
-                <a href="/edit/{{ field[2] }}/{{ entry[field[0]].id }}">
+                <a href="/edit/{{ field[2] }}/{{ entry[field[0]].id }}">{{ field[0].title() }}: {{ entry[field[0]] }}</a>
                 {% else %}
-            	<a href="/add/{{ field[2] }}/to/{{ header }}/{{ entry.id }}">
+            	<a href="/add/{{ field[2] }}/to/{{ header }}/{{ entry.id }}">{{ field[0].title() }}: {{ entry[field[0]] }}</a>
                 {% endif %}
-                {{ field[0].title() }}: {{ entry[field[0]] }}</a>
             {% else %}
             	{{ field[0].title() }}: {{ entry[field[0]] }}
             {% endif %}
@@ -24,11 +23,54 @@
 {% endmacro %}
 
 
+{% macro list_entries_panel(entries, fields, header) %}
+<div class="panel-group">
+
+
+
+        {% for entry in entries %}
+
+            <a data-toggle="collapse" href="#{{entry.id}}"><div class="panel-default">{{ entry }}</div></a>
+
+            <div id="{{entry.id}}" class="panel-collapse collapse">
+                <ul class="list-group">
+                    {% for field in fields %}
+                        <li class="list-group-item">
+                        {% if field[1] == 'ForeignKeyField' %}
+                            {% if entry[field[0]] %}
+                            <a href="/edit/{{ field[2] }}/{{ entry[field[0]].id }}">{{ field[0].title() }}: {{ entry[field[0]] }}</a>
+                            {% else %}
+                            <a href="/add/{{ field[2] }}/to/{{ header }}/{{ entry.id }}">{{ field[0].title() }}: {{ entry[field[0]] }}</a>
+                            {% endif %}
+                        {% else %}
+                            {{ field[0].title() }}: {{ entry[field[0]] }}
+                        {% endif %}
+                        </li>
+                    {% endfor %}
+                    <li class="list-group-item">
+                    <a href="/edit/{{ header }}/{{ entry.id }}"><button>Edit</button></a>
+                    </li>
+                </ul>
+            </div>
+
+        {% endfor %}
+
+
+</div>
+{% endmacro %}
+
+
 
 {% macro list_dependencies(entries) %}
 <ul>
-{% for entry in entries %}
-    <li>{{ entry._meta.db_table }}<a href="/edit/{{ header }}/{{ entry.id }}">{{ entry }}</a> </li>
+{% for modelname in entries[0] %}
+    <li>{{ modelname }}
+        <ul>
+        {% for entry in entries[1][modelname] %}
+            <li><a href="/edit/{{ modelname }}/{{ entry.id }}">{{ entry }}</a> </li>
+        {% endfor %}
+        </ul>
+    </li>
 {% endfor %}
 </ul>
 {% endmacro %}

@@ -1,6 +1,7 @@
 {% macro render_field(field) %}
-  <dt>{{ field.label }}
-  <dd>{{ field(**kwargs)|safe }}
+  <div class="form-group">
+  <label for="{{field.id}}">{{ field.label }}</label>
+  {{ field(**kwargs)|safe }}
   {% if field.errors %}
     <ul class=errors>
     {% for error in field.errors %}
@@ -8,18 +9,16 @@
     {% endfor %}
     </ul>
   {% endif %}
-  </dd>
+  </div>
 {% endmacro %}
 
 {% macro build_formlist(form) %}
 <form method=post action="{{ url_for('register') }}">
-<dl>
 {% for field in form %}
   {% if not field.name in ['csrf_token'] %}
     {{ render_field(field) }}
   {% endif %}
 {% endfor %}
-</dl>
 </form>
 {% endmacro %}
 

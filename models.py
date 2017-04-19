@@ -162,13 +162,15 @@ class Task(baseModel):
     asset = ForeignKeyField(Asset, related_name = 'asset_tasks', null = True)
     deadLine = TimestampField() #men hjälp av rel vet vi stard time end time
     def __unicode__(self):
-        return asset.name
+        return self.asset.name
 ALL_MODELS.append(Task)
 ALL_MODELS_DICT['Task'] = Task
 
 class TaskUserpersons(baseModel):
     task = ForeignKeyField(Task, related_name = 'task_userpersons', null = True)
     userperson = ForeignKeyField(Userperson, related_name = 'userperson_tasks', null = True)
+    def __unicode__(self):
+        return self.task.asset.name
 ALL_MODELS.append(TaskUserpersons)
 ALL_MODELS_DICT['TaskUserpersons'] = TaskUserpersons
 
@@ -176,24 +178,32 @@ class TaskGenerator(baseModel):  # genererar nästa deadline
     asset = ForeignKeyField(Asset, related_name = 'asset_taskgenerators', null = True)
     ruleCode = CharField()  #every hour workdays. #advanced feature
     interval = IntegerField()
+    def __unicode__(self):
+        return self.ruleCode
 ALL_MODELS.append(TaskGenerator)
 ALL_MODELS_DICT['TaskGenerator'] = TaskGenerator
 
 class Category(baseModel):
     name = CharField()  # dorr, tak
     label = CharField()  # Dörr
+    def __unicode__(self):
+        return self.label
 ALL_MODELS.append(Category)
 ALL_MODELS_DICT['Category'] = Category
 
 class CategoryDeviation(baseModel):
     category = ForeignKeyField(Category, related_name = 'category_deviations', null = True)
     value = CharField()
+    def __unicode__(self):
+        return self.value
 ALL_MODELS.append(CategoryDeviation)
 ALL_MODELS_DICT['CategoryDeviation'] = CategoryDeviation
 
 class CategoryIntention(baseModel):
-    Category = ForeignKeyField(Category, related_name = 'category_intentions', null = True)
+    category = ForeignKeyField(Category, related_name = 'category_intentions', null = True)
     value = CharField()
+    def __unicode__(self):
+        return self.value
 ALL_MODELS.append(CategoryIntention)
 ALL_MODELS_DICT['CategoryIntention'] = CategoryIntention
 
@@ -202,6 +212,8 @@ class AssetDeviation(baseModel):
     CategoryDeviation = ForeignKeyField(CategoryDeviation, 
         related_name = 'categoryDeviation_AssetDeviations', 
         null = True)
+    def __unicode__(self):
+        return self.CategoryDeviation.value
 ALL_MODELS.append(AssetDeviation)
 ALL_MODELS_DICT['AssetDeviation'] = AssetDeviation
 
@@ -212,6 +224,9 @@ class AssetsIntention(baseModel):
     CategoryIntention = ForeignKeyField(CategoryIntention, 
         related_name = 'categoryIntention_AssetIntentions', 
         null = True)
+    def __unicode__(self):
+        return self.CategoryIntention.value
+
 ALL_MODELS.append(AssetsIntention)
 ALL_MODELS_DICT['AssetsIntention'] = AssetsIntention
 
@@ -220,6 +235,8 @@ class Parameter(baseModel):
     name = CharField() #post_address etc.
     datatype = CharField() #number, text, datum,(this is predefined in html, creates multiple parameters .. .  te.x cordinat, dropdownlist, contact)
     htmltype = CharField()
+    def __unicode__(self):
+        return self.name
 ALL_MODELS.append(Parameter)
 ALL_MODELS_DICT['Parameter'] = Parameter
 
@@ -227,12 +244,16 @@ class Value(baseModel):
     asset = ForeignKeyField(Asset, related_name = "asset_values", null = True)
     parameter = ForeignKeyField(Parameter, related_name = "parameter_values", null = True)
     value = CharField()
+    def __unicode__(self):
+        return '{}: {}'.format(self.parameter.name, self.value)
 ALL_MODELS.append(Value)
 ALL_MODELS_DICT['Value'] = Value
 
 class Tag(baseModel):#tags
     asset = ForeignKeyField(Asset, related_name = "asset_Tags", null = True)
     label = CharField()
+    def __unicode__(self):
+        return self.label
 ALL_MODELS.append(Tag)
 ALL_MODELS_DICT['Tag'] = Tag
 

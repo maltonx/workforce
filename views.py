@@ -26,7 +26,7 @@ def register():
 @app.route('/add/<modelname>/', methods=['GET', 'POST'])
 def add(modelname):
     kwargs = listAndEdit(modelname)
-    return render_template('addpage.html', **kwargs)
+    return render_template('editpage.html', **kwargs)
 
 @app.route('/add/<modelname>/to/<foreign_table>/<foreign_key>', methods=['GET', 'POST'])
 def addto(modelname, foreign_table, foreign_key):
@@ -34,7 +34,7 @@ def addto(modelname, foreign_table, foreign_key):
         action = 'AddTo', 
         foreign_table = foreign_table, 
         foreign_key = foreign_key)
-    return render_template('addpage.html', **kwargs)
+    return render_template('editpage.html', **kwargs)
 
 @app.route('/edit/<modelname>/<entryid>', methods=['GET', 'POST'])
 def edit(modelname, entryid):
@@ -106,7 +106,8 @@ def getFields(model, exclude=['id']):
     return fields
   
 def getRelatedModels(entry):
-    entries = []
+    entries = {}
+    models = []
     try:
         for query, fk in reversed(list(entry.dependencies())):
             #for x in dir(fk):
@@ -114,10 +115,18 @@ def getRelatedModels(entry):
             for x in fk.model_class.select().where(query):
                 #print 'here:'
                 #print x
-                entries.append(x)
+                modelname = fk.model_class.__name__
+                try:
+                    entries[modelname].append(x)
+                except:
+                    models.append(modelname)
+                    entries[modelname] = []
+                    entries[modelname].append(x)
+
+                #entries.append((fk.model_class.__name__, x))
     except:
         pass
-    return entries
+    return (models, entries)
 
 
 

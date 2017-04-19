@@ -1,20 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<body>
+{% extends "layout.html" %}
+{% block body %}
 {% include 'header.html' %}
+<div class="container">
 <h2>{{ header }}</h2>
 
 <form method="post" action="">
 {% for field in form %}
-  <p>{{ field.label }} {{ field }}</p>
+  <div class="form-group">
+  <label for="{{field.id}}">{{ field.label }}</label>
+  {% if field.type == 'BooleanField' %}
+  	{{ field(class_="checkbox") }}
+  {% else %}
+    {{ field(class_="form-control") }}
+  {% endif %}
+  </div>
 {% endfor %}
-<p>
+<div class="form-group">
     <button type="submit", name="submit", value="Save">Add</button>
     <button type="submit", name="submit", value="Delete">Clear</button>
-</p>
+</div>
 </form>
-
 
 {% from "_listhelpers.html" import list_entries %}
 {{ list_entries(
@@ -24,5 +29,5 @@
     ) }}
 
 
-</body>
-</head>
+</div>
+{% endblock %}

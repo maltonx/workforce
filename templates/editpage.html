@@ -1,41 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<body>
+{% extends "layout.html" %}
+{% block body %}
 {% include 'header.html' %}
-<h2>{{ header }}</h2>
 
-<form method="post" action="">
-{% for field in form %}
-  <p>{{ field.label }} {{ field }}</p>
-{% endfor %}
-<p>
-    <button type="submit", name="submit", value="Save">Update</button>
-    <button type="submit", name="submit", value="Delete">Delete</button>
-</p>
-</form>
-
-<table>
-<tr>
-<td valign="top">
 {% from "_listhelpers.html" import list_entries %}
+{% from "_listhelpers.html" import list_entries_panel %}
 {% from "_listhelpers.html" import list_dependencies %}
-{{ list_entries(
-    entries = entries,
-    fields = fields,
-    header = header,
-    ) }}
-</td>
-<td valign="top">
 
-{{ list_dependencies(
-    entries = dependencies,
-    ) }}
-</td>
-</tr>
-</table>
+<div class="container">
+
+    <div class = "row">
+        <div class = "col-md-12">
+            <h2>{{ header }}s</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class = "row">
+
+                <div class="col-md-12">
+                    {{ list_entries_panel(
+                    entries = entries,
+                    fields = fields,
+                    header = header,
+                    ) }}
+                </div>
+
+                <div class="col-md-12">
+                    <button data-toggle="collapse" data-target="#addentry">Add {{ header }}</button>
+                    <div id="addentry" class="collapse">
+                        <form method="post" action="">
+                        {% for field in form %}
+                          <div class="form-group">
+                          <label for="{{field.id}}">{{ field.label }}</label>
+                          {% if field.type == 'BooleanField' %}
+                            {{ field(class_="checkbox") }}
+                          {% else %}
+                            {{ field(class_="form-control") }}
+                          {% endif %}
+                          </div>
+                        {% endfor %}
+                            <div class="form-group">
+                                <button type="submit", name="submit", value="Save">Save</button>
+                                <button type="submit", name="submit", value="Delete">Delete</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
 
 
+        <div class="col-md-4">
+            {{ list_dependencies(
+                entries = dependencies,
+                ) }}
+        </div>
+    </div>
 
-</body>
-</head>
+</div>
+{% endblock %}
