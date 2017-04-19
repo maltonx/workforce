@@ -22,8 +22,6 @@ CONFIG_FILE = os.path.join(
 CONFIG = ConfigParser.ConfigParser()
 CONFIG.read(CONFIG_FILE)
 
-
-
 app = Flask(__name__)
 
 app.config.update(dict(
@@ -33,27 +31,7 @@ app.config.update(dict(
     PASSWORD = CONFIG.get('app', 'PASSWORD'),
 ))
 
-
 from views import *
-
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
